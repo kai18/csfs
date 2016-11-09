@@ -36,9 +36,9 @@ int csfs_encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key
 {
   EVP_CIPHER_CTX *ctx;
 
-  int len;
+  int len = 0;
 
-  int ciphertext_len;
+  int ciphertext_len = 0;
 
   /* Create and initialise the context */
   if(!(ctx = EVP_CIPHER_CTX_new())) handleErrors();
@@ -70,9 +70,9 @@ int csfs_decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *k
 {
   EVP_CIPHER_CTX *ctx;
 
-  int len;
+  int len = 0;
 
-  int plaintext_len;
+  int plaintext_len = 0;
 
   /* Create and initialise the context */
   if(!(ctx = EVP_CIPHER_CTX_new())) handleErrors();

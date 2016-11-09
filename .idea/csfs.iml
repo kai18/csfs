@@ -2,18 +2,18 @@
 <module type="CPP_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/csfs.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/csfs.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/log.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/fuse.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/mkcert.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/crypto.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/log.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/crypto.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/config.h.in" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/csfs.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/params.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/fuse.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/mkcert.c" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/crypto.c" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/log.c" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/crypto.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/log.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/config.h.in" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/csfs.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/params.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/test.c" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">

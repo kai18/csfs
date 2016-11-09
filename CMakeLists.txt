@@ -10,17 +10,17 @@ include_directories(${OPENSSL_INCLUDE_DIRS})
 set(CMAKE_CXX_FLAGS "${OPENSSL_CFLAGS} ${FUSE_CFLAGS} ${CMAKE_CXX_FLAGS} -std=c++11")
 
 set(SOURCE_FILES
-    config.h.in
-    crypto.c
-    crypto.h
-    csfs.c
-    csfs.h
-    fuse.h
-    log.c
-    log.h
-    mkcert.c
-    params.h
-    test.c)
+        src/config.h.in
+        src/crypto.c
+        src/crypto.h
+        src/csfs.c
+        src/csfs.h
+        src/fuse.h
+        src/log.c
+        src/log.h
+        src/mkcert.c
+        src/params.h
+        src/test.c)
 
 add_executable(csfs ${SOURCE_FILES})
 

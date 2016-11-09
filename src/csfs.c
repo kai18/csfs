@@ -9,14 +9,14 @@
  Compiler Flags: gcc -Wall -lcrypto `pkg-config fuse --cflags --libs` `libgcrypt-config --cflags --libs` -o csfs csfs.c log.c crypto.c
  */
 
+#include <openssl/conf.h>
 #include "params.h"
 #include "csfs.h"
 #include "crypto.h"
 
-#ifdef HAVE_SYS_XATTR_H
+#ifndef HAVE_SYS_XATTR_H
 #include <sys/xattr.h>
 #endif
-
 #include "log.h"
 unsigned char *key = (unsigned char *) "01234567890123456789012345678901";
 
@@ -270,7 +270,7 @@ int csfs_utime(const char *path, struct utimbuf *ubuf) {
  */
 int csfs_open(const char *path, struct fuse_file_info *fi) {
 	int retstat = 0;
-	int fd;
+	uint64_t fd;
 	char fpath[PATH_MAX];
 
 	log_msg("\ncsfs_open(path\"%s\", fi=0x%08x)\n", path, fi);
@@ -288,25 +288,24 @@ int csfs_open(const char *path, struct fuse_file_info *fi) {
 
 //Read data from an open file
 
-static size_t get_size(int fd)
+static off_t get_size(int fd)
 {
 	struct stat buf;
 	fstat(fd, &buf);
-	return buf.st_size;
+	return (size_t) buf.st_size;
 }
 /* We read data in blocks and write data in blocks. So we need to find
  * block numbers to identify which block the data belongs to.
  *
  * */
-int csfs_read(const char *path, unsigned char *buf, size_t size, off_t offset,
-			  struct fuse_file_info *fi) {
+int csfs_read(const char *path, char *buf, size_t size, off_t offset,
+              struct fuse_file_info *fi) {
 
 	int retstat = 0, p_len = -1;
-	size_t pending = size;
+
 	off_t block_off,block_no, pending_blocks;
 	unsigned char *p_text;
 	unsigned char *c_text;
-	size_t file_size = get_size(fi->fh);
 
 	block_no = offset/BLOCK_SIZE;
 	block_off = (block_no*BLOCK_SIZE);
@@ -316,7 +315,7 @@ int csfs_read(const char *path, unsigned char *buf, size_t size, off_t offset,
 	else
 		pending_blocks = (size/BLOCK_SIZE)+1;
 
-	p_text = (unsigned char*)calloc(pending_blocks*BLOCK_SIZE, sizeof(unsigned char));
+	p_text = (unsigned char*)calloc((size_t) (pending_blocks * BLOCK_SIZE), sizeof(unsigned char));
 	c_text = (unsigned char*)malloc(BLOCK_SIZE*sizeof(unsigned char));
 
 	log_msg(
@@ -335,10 +334,6 @@ int csfs_read(const char *path, unsigned char *buf, size_t size, off_t offset,
 	memcpy(buf, p_text, size);
 	return size;
 
-/*	fprintf(stderr, "plaint text length is %d\n buf length is %d", p_len,
-					strlen(buf));
-	fprintf(stderr, "retstat is %d and size is %lu", retstat, size);*/
-
 }
 
 void fetch_key()
@@ -352,16 +347,17 @@ void fetch_key()
  * mount option is specified (see read operation).
  */
 
-int csfs_write(const char *path, unsigned char *buf, size_t size,
-			   off_t offset, struct fuse_file_info *fi) {
+int csfs_write(const char *path, const char *buf, size_t size,
+               off_t offset, struct fuse_file_info *fi) {
 
-	int retstat, c_len, chunk_off=0;
+	int retstat = 0, c_len, chunk_off=0;
 	unsigned char *ebuf = (unsigned char*)malloc(
 			BLOCK_SIZE*sizeof(unsigned char));
 	off_t off = offset;
-	size_t remaining_bytes = size, file_size;
-	file_size = get_size(fi->fh);
+	size_t remaining_bytes = size;
+	//file_size = get_size(fi->fh);
 	fprintf(stderr, "SIZE = %d ", remaining_bytes);
+
 
 	while(remaining_bytes > 0)
 	{
@@ -384,7 +380,7 @@ int csfs_write(const char *path, unsigned char *buf, size_t size,
 			while(remaining_bytes >= BLOCK_SIZE)
 			{
 				c_len = csfs_encrypt(buf+chunk_off, BLOCK_SIZE, key, iv, ebuf);
-				retstat += pwrite(fi->fh, ebuf, c_len, off);
+				retstat += pwrite(fi->fh, ebuf, (size_t) c_len, off);
 				remaining_bytes -= BLOCK_SIZE;
 				off = off+BLOCK_SIZE;
 				chunk_off += BLOCK_SIZE;
@@ -483,6 +479,7 @@ int csfs_fsync(const char *path, int datasync, struct fuse_file_info *fi) {
 	return retstat;
 }
 
+#ifndef ifdef HAVE_SYS_XATTR_H
 /** Set extended attributes */
 int csfs_setxattr(const char *path, const char *name, const char *value,
 				  size_t size, int flags) {
@@ -556,6 +553,7 @@ int csfs_removexattr(const char *path, const char *name) {
 	return retstat;
 }
 
+#endif
 /** Open directory
  *
  * This method should check if the open operation is permitted for
@@ -575,7 +573,7 @@ int csfs_opendir(const char *path, struct fuse_file_info *fi) {
 	if (dp == NULL)
 		retstat = csfs_error("csfs_opendir opendir");
 
-	fi->fh = (intptr_t) dp;
+	fi->fh = (uint64_t) (intptr_t) dp;
 
 	log_fi(fi);
 
@@ -653,7 +651,7 @@ void *csfs_init(struct fuse_conn_info *conn) {
 	log_msg("\ncsfs_init()\n");
 
 	log_conn(conn);
-	log_fuse_context(fuse_get_context());
+	//log_fuse_context(fuse_get_context());
 
 	return csfs_DATA;
 }

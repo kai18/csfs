@@ -18,9 +18,7 @@
 #include <fcntl.h>
 #include <fuse.h>
 #include <libgen.h>
-#include <limits.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
 #define CSFS_ID "csfs_id"
